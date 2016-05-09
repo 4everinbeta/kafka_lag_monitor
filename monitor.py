@@ -5,12 +5,17 @@ from alarmageddon.validations.kafka import KafkaConsumerLagMonitor
 from alarmageddon.validations.ssh import SshContext
 from alarmageddon.publishing.hipchat import HipChatPublisher
 
+from ConfigParser import SafeConfigParser
+
+parser = SafeConfigParser()
+parser.read('config.ini')
+
 # Setup ssh context
-ssh_ctx = SshContext("ec2-user","/home/jenkins/.ssh/kafka-key.pem")
+ssh_ctx = SshContext(parser.get("ssh", "user"),parser.get("ssh", "key"))
 
 # Define kafka Validation
-zk_nodes = '10.196.2.40:2181,10.196.2.39:2181,10.196.2.38:2181'
-kafka_hosts = ['52.26.246.89','52.24.9.167','52.27.168.120']
+zk_nodes = parser.get("kafka", "zookeeper_nodes")
+kafka_hosts = parser.get("kafka", "hosts").split(',')
 
 kafka_offset_monitor = KafkaConsumerLagMonitor(ssh_ctx, zookeeper_nodes=zk_nodes,hosts=kafka_hosts)
 
@@ -19,10 +24,10 @@ validations.append(kafka_offset_monitor)
 
 # Define publishers
 publishers = []
-hipchat_endpoint = "https://api.hipchat.com/v1/"
-hipchat_token = "cce062fd37d94bb9da4bff76bc292f"
-environment = "stable"
-room = 2686409
+hipchat_endpoint = parser.get("hipchat", "endpoint")
+hipchat_token = parser.get("hipchat", "token")
+environment = parser.get("hipchat", "environment")
+room = parser.get("hipchat", "room")
 publishers.append(HipChatPublisher(hipchat_endpoint, hipchat_token, environment, room))
 
 # Run tests
