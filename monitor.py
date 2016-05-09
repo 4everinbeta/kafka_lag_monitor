@@ -6,7 +6,7 @@ from alarmageddon.validations.ssh import SshContext
 from alarmageddon.publishing.hipchat import HipChatPublisher
 
 # Setup ssh context
-ssh_ctx = SshContext("ec2-user","/home/ec2-user/.ssh/kafka-key.pem")
+ssh_ctx = SshContext("ec2-user","/home/jenkins/.ssh/kafka-key.pem")
 
 # Define kafka Validation
 zk_nodes = '10.196.2.40:2181,10.196.2.39:2181,10.196.2.38:2181'
